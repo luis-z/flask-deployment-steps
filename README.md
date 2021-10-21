@@ -68,16 +68,72 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-test app with following command:
+Test the server with the following command:
 
 ```bash
 uwsgi --http-socket :5000 --plugin python3 --module wsgi:app
 ```
+
+Now let's create a **app.ini** file:
+```bash
+[uwsgi]
+chdir = /var/www/html/test-server/
+module = wsgi:app
+
+processes = 4
+threads = 2
+virtualenv = /var/www/html/test-server/venv
+
+master = true
+socket = glufco-wallet.sock
+chmod-socket = 666
+vacuum = true
+
+die-on-term = true
+
+logto = /var/www/html/test-server/log/%n.log
+```
+Now we can start the server with the following command:
+ ```bash
+uwsgi app.ini
+ ```
+
+
+
 
 ### Create Ubuntu service
 After verifying that the app runs normally the next step is to create an Ubuntu service.
 Run the following command to create a service file.
 
 ```bash
-sudo vi /etc/systemd/system/test_server.service 
+$ sudo nano /etc/systemd/system/test_server.service 
+```
+Then paste the following changing the values:
+```bash
+[Unit]
+Description=My custom flask app Service
+After=network.target
+
+[Service]
+User=root
+
+WorkingDirectory=/var/www/html/glufco-wallet
+Environment="PATH=/var/www/html/test-server/venv/bin"
+ExecStart=/var/www/html/test-server/venv/bin/uwsgi --ini app.ini
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+-   `User`: Tells our service to run our app as the Ubuntu root user.
+-   `WorkingDirectory`: The working directory that we'll be serving our app from.
+-   `Environment`: Our project's Python virtual environment.
+-   `ExecStart`: This is the most important part of our configuration: a shell command to actually start our application. Each time we "start" or "restart" our service, this is the command being executed.
+-   `Restart`  &  `RestartSec`: These two values are telling our service to check if our app is running every 10 seconds. If the app happens to be down, our service will restart the app, hence the  **on-failure**  value for  **Restart**.
+
+Now we can check start check the status  of the service: 
+```shell
+service myapp start
+service myapp status
 ```
