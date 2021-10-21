@@ -74,7 +74,7 @@ Test the server with the following command:
 uwsgi --http-socket :5000 --plugin python3 --module wsgi:app
 ```
 
-Now let's create a **app.ini** file:
+Now let's create an **app.ini** file:
 ```bash
 [uwsgi]
 chdir = /var/www/html/test-server/
@@ -85,7 +85,7 @@ threads = 2
 virtualenv = /var/www/html/test-server/venv
 
 master = true
-socket = glufco-wallet.sock
+socket = socket.sock
 chmod-socket = 666
 vacuum = true
 
@@ -117,7 +117,7 @@ After=network.target
 [Service]
 User=root
 
-WorkingDirectory=/var/www/html/glufco-wallet
+WorkingDirectory=/var/www/html/test-server
 Environment="PATH=/var/www/html/test-server/venv/bin"
 ExecStart=/var/www/html/test-server/venv/bin/uwsgi --ini app.ini
 Restart=on-failure
