@@ -101,7 +101,7 @@ uwsgi app.ini
 
 
 
-### Create Ubuntu service
+### Create an Ubuntu service
 After verifying that the app runs normally the next step is to create an Ubuntu service.
 Run the following command to create a service file.
 
@@ -134,6 +134,6 @@ WantedBy=multi-user.target
 
 Now we can check start check the status  of the service: 
 ```shell
-service myapp start
-service myapp status
+service test_server start
+service test_server status
 ```
